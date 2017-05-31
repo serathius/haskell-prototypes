@@ -1,0 +1,11 @@
+name:                scotty-demo
+version:             0.1.0.0
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable scottson
+  main-is:             Main.hs
+  build-depends:       base
+                     , scotty
+                     , http-types
+  default-extensions:  OverloadedStrings

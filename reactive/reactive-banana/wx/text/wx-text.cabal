@@ -1,0 +1,13 @@
+name:          wx-text
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable          wx-text
+    main-is:        Main.hs
+    build-depends:  base
+                  , reactive-banana-wx
+                  , reactive-banana
+                  , wx
+                  , time
+

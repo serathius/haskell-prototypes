@@ -1,0 +1,13 @@
+name:          keyboard
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable          keyboard
+    main-is:        Main.hs
+    build-depends:  base
+                  , reactive-banana
+                  , reactive-banana-sdl2
+                  , sdl2
+                  , linear
+                  , text

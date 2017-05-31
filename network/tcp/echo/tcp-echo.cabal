@@ -1,0 +1,9 @@
+name:          tcp-echo
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable          tcp-echo
+    main-is:        Main.hs
+    build-depends:  base
+                  , network

@@ -1,0 +1,7 @@
+resolver: lts-5.0
+packages:
+- '.'
+extra-deps:
+  - reactive-banana-1.1.0.1
+  - reactive-banana-sdl2-0.1.1.0
+  - sdl2-ttf-1.0.0
