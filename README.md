@@ -1,0 +1,1 @@
+Collection of haskell prototypes for future reference.
