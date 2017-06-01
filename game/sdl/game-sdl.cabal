@@ -20,3 +20,12 @@ executable              renderer
                       , sdl2
                       , text
                       , linear
+
+executable              keyboard
+    main-is:            keyboard.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Keyboard
+    build-depends:      base
+                      , sdl2
+                      , text
+                      , linear
