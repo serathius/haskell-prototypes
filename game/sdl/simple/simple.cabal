@@ -7,8 +7,6 @@ executable          simple
     main-is:        Main.hs
     default-extensions:  OverloadedStrings
     build-depends:  base
-                  , reactive-banana
-                  , reactive-banana-sdl2
                   , sdl2
-                  , linear
                   , text
+                  , linear

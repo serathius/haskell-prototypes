@@ -5,39 +5,29 @@ import Reactive.Banana.SDL2
 import Reactive.Banana.Frameworks
 import qualified SDL as SDL
 import Linear
-import Data.Text
 
+white = V4 maxBound maxBound maxBound maxBound
 
 main :: IO ()
 main = do
-  window <- initialize
-  fillWhite window
+  SDL.initialize [SDL.InitVideo]
+  window <- SDL.createWindow "Reactive-Banana SDL Simple" SDL.defaultWindow
+
   eventSource <- getSDLEventSource
-  network <- compile $ describeNetwork eventSource window
+  let describeNetwork :: MomentIO ()
+      describeNetwork = do
+        tick <- tickEvent eventSource
+        reactimate $ fmap (const $ fillWhite window) tick
+  network <- compile describeNetwork
   actuate network
   runSDLPump eventSource
-  quit window
 
-initialize :: IO SDL.Window
-initialize = do
-  SDL.initialize [SDL.InitVideo]
-  SDL.createWindow (pack "Render") SDL.defaultWindow
-
-quit :: SDL.Window -> IO ()
-quit window = do
   SDL.destroyWindow window
   SDL.quit
-
-describeNetwork :: SDLEventSource -> SDL.Window -> MomentIO ()
-describeNetwork eventSource window = do
-  tick <- tickEvent eventSource
-  reactimate $ fmap (const $ SDL.updateWindowSurface window) tick
-  return ()
 
 fillWhite :: SDL.Window -> IO ()
 fillWhite window = do
   surface <- SDL.getWindowSurface window
-  let white = V4 maxBound maxBound maxBound maxBound
   SDL.surfaceFillRect surface Nothing white
   SDL.freeSurface surface
-  return ()
+  SDL.updateWindowSurface window
