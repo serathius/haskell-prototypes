@@ -1,0 +1,12 @@
+name:          renderer
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable          renderer
+    main-is:        Main.hs
+    default-extensions:  OverloadedStrings
+    build-depends:  base
+                  , sdl2
+                  , text
+                  , linear
