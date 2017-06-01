@@ -1,4 +1,4 @@
-module Main where
+module Renderer where
 
 import Control.Monad
 import Data.Function

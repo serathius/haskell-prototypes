@@ -1,0 +1,22 @@
+name:          game-sdl
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable              simple
+    main-is:            simple.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Simple
+    build-depends:      base
+                      , sdl2
+                      , text
+                      , linear
+
+executable              renderer
+    main-is:            renderer.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Renderer
+    build-depends:      base
+                      , sdl2
+                      , text
+                      , linear
