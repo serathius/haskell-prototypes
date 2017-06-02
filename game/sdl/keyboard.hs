@@ -11,9 +11,6 @@ import qualified SDL
 import Linear
 import Linear.Affine (Point(P))
 
-white :: V4 CInt
-white = V4 maxBound maxBound maxBound maxBound
-
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
