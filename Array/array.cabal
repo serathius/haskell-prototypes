@@ -1,0 +1,35 @@
+name:          array
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+
+executable              storable-perlin
+    hs-source-dirs:     .
+    main-is:            Storable/Perlin.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Storable.Perlin -O2 -threaded
+    build-depends:      base
+                      , vector
+                      , hsnoise
+
+
+executable              storable-stacking
+    hs-source-dirs:     .
+    main-is:            Storable/Stacking.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Storable.Stacking -threaded
+    build-depends:      base
+                      , vector
+                      , hsnoise
+
+executable              yarr-perlin
+    hs-source-dirs:     .
+    main-is:            Yarr/Perlin.hs
+    default-extensions: OverloadedStrings
+    ghc-options:        -main-is Yarr.Perlin -Odph -rtsopts -threaded -fno-liberate-case -funbox-strict-fields -fexpose-all-unfoldings -funfolding-keeness-factor1000 -fsimpl-tick-factor=500 -optlo-O3
+    build-depends:      base
+                      , hsnoise
+                      , directory
+                      , yarr
+                      , yarr-image-io
