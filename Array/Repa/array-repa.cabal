@@ -1,4 +1,4 @@
-name:          repa
+name:          array-repa
 version:       0.0.0
 cabal-version: >= 1.8
 build-type:    Simple
@@ -7,7 +7,6 @@ build-type:    Simple
 executable              repa-perlin
     hs-source-dirs:     .
     main-is:            Perlin.hs
-    default-extensions: OverloadedStrings
     ghc-options:        -main-is Repa.Perlin -Odph -rtsopts -threaded -fno-liberate-case -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -optlo-O3
     build-depends:      base
                       , hsnoise
@@ -19,7 +18,6 @@ executable              repa-perlin
 executable              repa-stacking
     hs-source-dirs:     .
     main-is:            Stacking.hs
-    default-extensions: OverloadedStrings
     ghc-options:        -main-is Repa.Stacking -Odph -rtsopts -threaded -fno-liberate-case -funfolding-use-threshold1000 -funfolding-keeness-factor1000 -optlo-O3
     build-depends:      base
                       , hsnoise
