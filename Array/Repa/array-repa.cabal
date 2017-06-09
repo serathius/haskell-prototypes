@@ -11,8 +11,7 @@ executable              repa-perlin
     build-depends:      base
                       , hsnoise
                       , repa
-                      , repa-devil
-                      , directory
+                      , JuicyPixels
 
 
 executable              repa-stacking
@@ -22,5 +21,4 @@ executable              repa-stacking
     build-depends:      base
                       , hsnoise
                       , repa
-                      , repa-devil
-                      , directory
+                      , JuicyPixels
