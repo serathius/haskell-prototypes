@@ -1,0 +1,85 @@
+name:          game-networking
+version:       0.0.0
+cabal-version: >= 1.8
+build-type:    Simple
+
+executable          lock-step-server
+    other-modules:  Common.State
+    hs-source-dirs: .
+    main-is:        LockStep/Server.hs
+    ghc-options:    -main-is LockStep.Server
+    build-depends:  base
+                  , network
+                  , time
+                  , transformers
+                  , mtl
+
+executable          lock-step-client
+    other-modules:  Common.Server
+                  , Common.State
+    hs-source-dirs: .
+    main-is:        LockStep/Client.hs
+    ghc-options:    -main-is LockStep.Client
+    default-extensions: OverloadedStrings
+    build-depends:  base
+                  , network
+                  , time
+                  , transformers
+                  , sdl2
+                  , mtl
+                  , text
+                  , linear
+executable          prediction-client
+    other-modules:  Common.Server
+                  , Common.State
+                  , Common.Client
+    hs-source-dirs: .
+    main-is:        Prediction/Client.hs
+    ghc-options:    -main-is Prediction.Client
+    default-extensions: OverloadedStrings
+    build-depends:  base
+                  , network
+                  , time
+                  , transformers
+                  , sdl2
+                  , mtl
+                  , text
+                  , linear
+executable          reconciliation-server
+    other-modules:  Common.Server
+                  , Common.State
+                  , Common.Client
+                  , Common.Timed.State
+                  , Common.Timed.Server
+    hs-source-dirs: .
+    main-is:        Reconciliation/Server.hs
+    ghc-options:    -main-is Reconcilation.Server
+    default-extensions: OverloadedStrings
+    build-depends:  base
+                  , network
+                  , time
+                  , transformers
+                  , sdl2
+                  , mtl
+                  , text
+                  , linear
+                  , stm
+executable          reconciliation-client
+    other-modules:  Common.Server
+                  , Common.State
+                  , Common.Client
+                  , Common.Timed.State
+                  , Common.Timed.Server
+    hs-source-dirs: .
+    main-is:        Reconciliation/Client.hs
+    ghc-options:    -main-is Reconcilation.Client
+    default-extensions: OverloadedStrings
+    build-depends:  base
+                  , network
+                  , time
+                  , transformers
+                  , sdl2
+                  , mtl
+                  , text
+                  , linear
+                  , stm
