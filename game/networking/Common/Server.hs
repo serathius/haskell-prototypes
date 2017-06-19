@@ -14,15 +14,15 @@ import Text.Read
 import Common.State
 
 
-data ServerData = ServerData { clientChan :: !(Chan ClientEvent)
-                             , serverChan :: !(Chan ServerEvent)
-                             , accepter :: !(ThreadId)
-                             }
+data ServerData s c = ServerData { clientChan :: !(Chan c)
+                                 , serverChan :: !(Chan s)
+                                 , accepter :: !(ThreadId)
+                                 }
 
-type ClientHandler = Socket -> Chan ClientEvent -> Chan ServerEvent -> Int -> IO ()
-type ClientConnectionHandler = Handle -> Chan ServerEvent -> Chan ClientEvent -> Int -> IO ()
+type ClientHandler s c = Socket -> Chan c -> Chan s -> Int -> IO ()
+type ClientConnectionHandler s c = Handle -> Chan s -> Chan c -> Int -> IO ()
 
-startServer :: PortNumber -> ClientConnectionHandler -> IO (ServerData)
+startServer :: PortNumber -> ClientConnectionHandler s c -> IO (ServerData s c)
 startServer port connectionHandler = do
   sock <- socket AF_INET Stream 0
   setSocketOption sock ReuseAddr 1
@@ -33,7 +33,7 @@ startServer port connectionHandler = do
   clientAccepter <- forkIO $ acceptClients connectionHandler sock clientChan serverChan 0
   return ServerData{clientChan=clientChan, serverChan=serverChan, accepter=clientAccepter}
 
-acceptClients :: ClientConnectionHandler -> ClientHandler
+acceptClients :: ClientConnectionHandler s c -> ClientHandler s c
 acceptClients connectionHandler sock readChan writeChan clientID = do
   (acceptedSocket, _) <- accept sock
   clientChan <- dupChan writeChan
@@ -48,14 +48,14 @@ sockToHandle sock = do
     hSetBuffering hdl NoBuffering
     return hdl
 
-stopServer :: ServerData -> IO ()
+stopServer :: ServerData s c -> IO ()
 stopServer server = do
   killThread (accepter server)
 
 parseClientEventPayload :: String -> Maybe ClientEventPayload
 parseClientEventPayload = readMaybe
 
-runConnServer :: ClientConnectionHandler
+runConnServer :: ClientConnectionHandler ServerEvent ClientEvent
 runConnServer hdl sink source clientID = do
     reader <- forkIO fromSinkToHandle
     fromHandleToSource

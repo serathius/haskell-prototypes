@@ -29,6 +29,7 @@ executable          lock-step-client
                   , mtl
                   , text
                   , linear
+                  , stm
 executable          prediction-client
     other-modules:  Common.Server
                   , Common.State
@@ -45,6 +46,7 @@ executable          prediction-client
                   , mtl
                   , text
                   , linear
+                  , stm
 executable          reconciliation-server
     other-modules:  Common.Server
                   , Common.State

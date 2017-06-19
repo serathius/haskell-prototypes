@@ -8,11 +8,18 @@ import Linear.Affine (Point(P))
 import Foreign.C.Types
 import Data.Monoid
 import Data.Maybe
+import Data.Word
+import Control.Monad
 
 import Common.State
 import qualified SDL
 
 import Common.Server
+
+fpsCap :: Word16
+fpsCap = 60
+
+secondsPerFrame = fromIntegral $ 1000 `div` fpsCap
 
 connectToServer :: IO Handle
 connectToServer = do
@@ -58,3 +65,9 @@ pullClientEvent = do
                 payloads
   return clientEvent
 
+waitForNextFrame :: Word32 -> IO Word32
+waitForNextFrame previousTick = do
+  currentTick <- SDL.ticks
+  let ticks = fromIntegral $ currentTick - previousTick
+  when (ticks < secondsPerFrame) $ SDL.delay (secondsPerFrame - ticks)
+  return currentTick

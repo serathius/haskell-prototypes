@@ -10,44 +10,61 @@ import Control.Concurrent.Chan
 import Text.Read
 import Data.Time.Clock
 import qualified SDL
+import Data.Word
+import Control.Concurrent.STM
 
-import Common.Server
 import Common.State
+import Common.Server
 import Common.Client
 
 main :: IO ()
 main = do
-  sock <- socket AF_INET Stream 0
-  connect sock $ SockAddrInet (4242 :: PortNumber) $ tupleToHostAddress (127, 0, 0, 1)
-  handle <- sockToHandle sock
+  handle <- connectToServer
   clientChan <- newChan
+  clientUpdateChan <- dupChan clientChan
   serverChan <- newChan
   (window, renderer) <- initSDL
 
-  mainLoop <- forkIO $ loop State{position=0} clientChan serverChan renderer
+  stateVar <- atomically (newTVar State{position=0})
+  serverUpdateThread <- forkIO $ serverUpdateStateLoop stateVar serverChan
+  clientUpdateThread <- forkIO $ clientUpdateStateLoop stateVar clientUpdateChan
+  renderThread <- forkIO $ renderLoop stateVar clientChan renderer
   runConnClient handle clientChan serverChan
 
-  killThread mainLoop
+  killThread serverUpdateThread
+  killThread clientUpdateThread
+  killThread renderThread
   quitSDL window renderer
 
-loop :: State -> Chan ClientEventPayload -> Chan ServerEvent -> SDL.Renderer -> IO ()
-loop state clientChan serverChan renderer = do
+serverUpdateStateLoop :: TVar State -> Chan ServerEvent -> IO ()
+serverUpdateStateLoop stateVar serverChan = do
+  event <- readChan serverChan
+  case event of
+    Sync state' -> do
+      atomically $ do
+        writeTVar stateVar $ state'
+  serverUpdateStateLoop stateVar serverChan
+
+clientUpdateStateLoop :: TVar State -> Chan ClientEventPayload -> IO ()
+clientUpdateStateLoop stateVar clientChan = do
+  event <- readChan clientChan
+  atomically $ do
+    state <- readTVar stateVar
+    writeTVar stateVar $ updateState state ClientEvent{payload=event, clientID=1}
+  clientUpdateStateLoop stateVar clientChan
+
+renderLoop :: TVar State -> Chan ClientEventPayload -> SDL.Renderer -> IO ()
+renderLoop stateVar clientChan renderer = do
+  currentTick <- SDL.ticks
+  renderLoop' stateVar clientChan renderer currentTick
+
+renderLoop' :: TVar State -> Chan ClientEventPayload -> SDL.Renderer -> Word32 -> IO ()
+renderLoop' stateVar clientChan renderer previousTick = do
   clientEvent <- pullClientEvent
   case clientEvent of
     Just c -> writeChan clientChan c
     Nothing -> return ()
-  let state' :: State
-      state' = case clientEvent of
-        Just c -> updateState state $ ClientEvent{payload=c, clientID=1}
-        Nothing -> state
-  isEmpty <- isEmptyChan serverChan
-  if not isEmpty
-    then do
-      event <- readChan serverChan
-      case event of
-        Sync state'' -> do
-          render renderer $ position state''
-          loop state'' clientChan serverChan renderer
-    else do
-      render renderer $ position state'
-      loop state' clientChan serverChan renderer
+  state <- readTVarIO stateVar
+  render renderer $ position state
+  currentTick <- waitForNextFrame previousTick
+  renderLoop' stateVar clientChan renderer currentTick

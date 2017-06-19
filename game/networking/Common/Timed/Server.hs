@@ -16,16 +16,11 @@ import Common.Timed.State
 import Common.Server
 import Common.State
 
-parseTimedClientEvent :: String -> Maybe TimedClientEvent
-parseTimedClientEvent = readMaybe
+parseTimedClientEventPayload :: String -> Maybe TimedClientEventPayload
+parseTimedClientEventPayload = readMaybe
 
-runConnTimedServer :: ClientConnectionHandler
+runConnTimedServer :: ClientConnectionHandler TimedServerEvent TimedClientEvent
 runConnTimedServer hdl sink source clientID = do
-  timeVar <- atomically (newTVar 0)
-  runConnTimedServer' hdl sink source clientID timeVar
-
-runConnTimedServer' :: Handle -> Chan ServerEvent -> Chan ClientEvent -> Int -> TVar Int -> IO ()
-runConnTimedServer' hdl sink source clientID timeVar = do
     reader <- forkIO fromSinkToHandle
     fromHandleToSource
     killThread reader
@@ -33,20 +28,17 @@ runConnTimedServer' hdl sink source clientID timeVar = do
   where
     fromSinkToHandle = fix $ \loop -> do
       event <- readChan sink
-      time <- readTVarIO timeVar
-      hPutStrLn hdl $ show TimedServerEvent{serverEvent=event, clientTime2=time}
+      hPutStrLn hdl $ show event
       loop
     fromHandleToSource = fix $ \loop -> do
       input <- hGetLine hdl
-      case parseTimedClientEvent input of
+      case parseTimedClientEventPayload input of
         Just tEvent -> do
-          atomically $ do
-            writeTVar timeVar $ clientTime tEvent
-          writeChan source $ ClientEvent{payload=clientPayload tEvent, clientID=clientID}
+          writeChan source $ TimedClientEvent{clientPayload2=clientPayload tEvent, clientTime3=clientTime tEvent, clientID2=clientID}
         Nothing -> return ()
       loop
 
-runConnTimedClient :: Handle -> Chan TimedClientEvent -> Chan TimedServerEvent -> IO ()
+runConnTimedClient :: Handle -> Chan TimedClientEventPayload -> Chan TimedServerEvent -> IO ()
 runConnTimedClient hdl sink source = do
     reader <- forkIO fromSinkToHandle
     fromHandleToSource
