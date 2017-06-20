@@ -7,7 +7,6 @@ import Control.Exception
 import Control.Concurrent
 import Control.Concurrent.Chan
 import Control.Monad
-import Control.Monad.Trans.Reader
 import Control.Monad.Fix (fix)
 import Text.Read
 
@@ -70,7 +69,7 @@ runConnServer hdl sink source clientID = do
       input <- hGetLine hdl
       case parseClientEventPayload input of
         Just payload -> do
-          writeChan source ClientEvent{payload=payload, clientID=clientID}
+          writeChan source $ ClientEvent payload clientID
         Nothing -> return ()
       loop
 

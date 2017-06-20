@@ -11,8 +11,7 @@ executable          lock-step-server
     build-depends:  base
                   , network
                   , time
-                  , transformers
-                  , mtl
+                  , lens
 
 executable          lock-step-client
     other-modules:  Common.Server
@@ -24,12 +23,11 @@ executable          lock-step-client
     build-depends:  base
                   , network
                   , time
-                  , transformers
                   , sdl2
-                  , mtl
                   , text
                   , linear
                   , stm
+                  , lens
 executable          prediction-client
     other-modules:  Common.Server
                   , Common.State
@@ -41,11 +39,10 @@ executable          prediction-client
     build-depends:  base
                   , network
                   , time
-                  , transformers
                   , sdl2
-                  , mtl
                   , text
                   , linear
+                  , lens
                   , stm
 executable          reconciliation-server
     other-modules:  Common.Server
@@ -60,12 +57,7 @@ executable          reconciliation-server
     build-depends:  base
                   , network
                   , time
-                  , transformers
-                  , sdl2
-                  , mtl
-                  , text
-                  , linear
-                  , stm
+                  , lens
 executable          reconciliation-client
     other-modules:  Common.Server
                   , Common.State
@@ -79,9 +71,8 @@ executable          reconciliation-client
     build-depends:  base
                   , network
                   , time
-                  , transformers
                   , sdl2
-                  , mtl
                   , text
                   , linear
                   , stm
+                  , lens

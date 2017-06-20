@@ -8,6 +8,7 @@ import Control.Concurrent.Chan
 import qualified SDL
 import Data.Word
 import Control.Concurrent.STM
+import Control.Lens
 
 import Common.State
 import Common.Timed.State
@@ -41,12 +42,12 @@ fakeClientID = 1
 serverUpdateStateLoop :: TVar State -> TVar [TimedClientEventPayload] -> Chan TimedServerEvent -> IO ()
 serverUpdateStateLoop stateVar eventsVar serverChan = do
   tEvent <- readChan serverChan
-  case serverEvent tEvent of
+  case tEvent^.event of
     Sync state -> do
       atomically $ do
         events <- readTVar eventsVar
-        let events' = filter (\e -> clientTime e > clientTime2 tEvent) events
-            cEvents = map (\e -> ClientEvent{payload=clientPayload e, clientID=fakeClientID}) events'
+        let events' = filter (\e -> e^.clientTime > tEvent^.clientTime) events
+            cEvents = map (\e -> ClientEvent (e^.payload) fakeClientID) events'
             state' = updateStateMulti state cEvents
         writeTVar eventsVar events'
         writeTVar stateVar state'
@@ -58,7 +59,7 @@ clientUpdateStateLoop stateVar eventsVar clientChan = do
   atomically $ do
     state <- readTVar stateVar
     events <- readTVar eventsVar
-    writeTVar stateVar $ updateState state ClientEvent{payload=clientPayload event, clientID=1}
+    writeTVar stateVar $ updateState state $ ClientEvent (event^.payload) 1
     writeTVar eventsVar $ event:events
   clientUpdateStateLoop stateVar eventsVar clientChan
 
@@ -71,7 +72,7 @@ renderLoop' :: TVar State -> Chan TimedClientEventPayload -> SDL.Renderer -> Wor
 renderLoop' stateVar clientChan renderer previousTick clientTime = do
   clientEvent <- pullClientEvent
   case clientEvent of
-    Just c -> writeChan clientChan TimedClientEventPayload{clientPayload=c, clientTime=clientTime}
+    Just c -> writeChan clientChan $ TimedClientEventPayload c clientTime
     Nothing -> return ()
   let clientTime' = case clientEvent of
         Just _ -> clientTime + 1

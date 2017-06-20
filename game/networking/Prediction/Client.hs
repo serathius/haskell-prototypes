@@ -50,7 +50,7 @@ clientUpdateStateLoop stateVar clientChan = do
   event <- readChan clientChan
   atomically $ do
     state <- readTVar stateVar
-    writeTVar stateVar $ updateState state ClientEvent{payload=event, clientID=1}
+    writeTVar stateVar $ updateState state $ ClientEvent event 1
   clientUpdateStateLoop stateVar clientChan
 
 renderLoop :: TVar State -> Chan ClientEventPayload -> SDL.Renderer -> IO ()

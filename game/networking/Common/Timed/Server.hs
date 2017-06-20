@@ -7,10 +7,9 @@ import Control.Exception
 import Control.Concurrent
 import Control.Concurrent.Chan
 import Control.Monad
-import Control.Monad.Trans.Reader
 import Control.Monad.Fix (fix)
 import Text.Read
-import Control.Concurrent.STM
+import Control.Lens
 
 import Common.Timed.State
 import Common.Server
@@ -34,7 +33,7 @@ runConnTimedServer hdl sink source clientID = do
       input <- hGetLine hdl
       case parseTimedClientEventPayload input of
         Just tEvent -> do
-          writeChan source $ TimedClientEvent{clientPayload2=clientPayload tEvent, clientTime3=clientTime tEvent, clientID2=clientID}
+          writeChan source $ TimedClientEvent (tEvent^.payload) (tEvent^.clientTime) clientID
         Nothing -> return ()
       loop
 
